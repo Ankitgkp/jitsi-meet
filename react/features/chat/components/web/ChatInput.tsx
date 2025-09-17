@@ -13,6 +13,7 @@ import Input from '../../../base/ui/components/web/Input';
 import { CHAT_SIZE } from '../../constants';
 import { areSmileysDisabled, isSendGroupChatDisabled } from '../../functions';
 
+import ReplyPreview from './ReplyPreview';
 import SmileysPanel from './SmileysPanel';
 
 
@@ -67,6 +68,11 @@ interface IProps extends WithTranslation {
      * The id of the message recipient, if any.
      */
     _privateMessageRecipientId?: string;
+
+    /**
+     * The message being replied to, if any.
+     */
+    _replyMessage?: any;
 
     /**
      * An object containing the CSS classes.
@@ -177,6 +183,9 @@ class ChatInput extends Component<IProps, IState> {
 
         return (
             <div className = { `chat-input-container${this.state.message.trim().length ? ' populated' : ''}` }>
+                {this.props._replyMessage && (
+                    <ReplyPreview replyMessage = { this.props._replyMessage } />
+                )}
                 <div id = 'chat-input' >
                     {!this.props._areSmileysDisabled && this.state.showSmileysPanel && (
                         <div
@@ -342,12 +351,13 @@ class ChatInput extends Component<IProps, IState> {
  * }}
  */
 const mapStateToProps = (state: IReduxState) => {
-    const { privateMessageRecipient, width } = state['features/chat'];
+    const { privateMessageRecipient, replyMessage, width } = state['features/chat'];
     const isGroupChatDisabled = isSendGroupChatDisabled(state);
 
     return {
         _areSmileysDisabled: areSmileysDisabled(state),
         _privateMessageRecipientId: privateMessageRecipient?.id,
+        _replyMessage: replyMessage,
         _isSendGroupChatDisabled: isGroupChatDisabled,
         _chatWidth: width.current ?? CHAT_SIZE,
     };

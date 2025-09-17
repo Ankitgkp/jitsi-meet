@@ -18,6 +18,7 @@ import {
     SET_LOBBY_CHAT_ACTIVE_STATE,
     SET_LOBBY_CHAT_RECIPIENT,
     SET_PRIVATE_MESSAGE_RECIPIENT,
+    SET_REPLY_MESSAGE,
     SET_USER_CHAT_WIDTH
 } from './actionTypes';
 import { CHAT_SIZE, ChatTabs } from './constants';
@@ -35,6 +36,7 @@ const DEFAULT_STATE = {
     isLobbyChatActive: false,
     focusedTab: ChatTabs.CHAT,
     isResizing: false,
+    replyMessage: undefined,
     width: {
         current: CHAT_SIZE,
         userSet: null
@@ -56,6 +58,7 @@ export interface IChatState {
     nbUnreadMessages: number;
     notifyPrivateRecipientsChangedTimestamp?: number;
     privateMessageRecipient?: IParticipant | IVisitorChatParticipant;
+    replyMessage?: IMessage;
     width: {
         current: number;
         userSet: number | null;
@@ -79,6 +82,7 @@ ReducerRegistry.register<IChatState>('features/chat', (state = DEFAULT_STATE, ac
             privateMessage: action.privateMessage,
             lobbyChat: action.lobbyChat,
             recipient: action.recipient,
+            replyToId: action.replyToId,
             sentToVisitor: Boolean(action.sentToVisitor),
             timestamp: action.timestamp
         };
@@ -270,6 +274,11 @@ ReducerRegistry.register<IChatState>('features/chat', (state = DEFAULT_STATE, ac
         return {
             ...state,
             notifyPrivateRecipientsChangedTimestamp: action.payload
+        };
+    case SET_REPLY_MESSAGE:
+        return {
+            ...state,
+            replyMessage: action.replyMessage
         };
     }
 

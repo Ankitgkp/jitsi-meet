@@ -132,6 +132,8 @@
         },
         "noMessagesMessage": "There are no messages in the meeting yet. Start a conversation here!",
         "privateNotice": "Private message to {{recipient}}",
+        "replyTo": "Reply to message",
+        "replyingTo": "Replying to {{displayName}}",
         "sendButton": "Send",
         "smileysPanel": "Emoji panel",
         "systemDisplayName": "System",

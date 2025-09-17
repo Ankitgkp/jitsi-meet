@@ -18,9 +18,11 @@ import {
     SET_FOCUSED_TAB,
     SET_LOBBY_CHAT_ACTIVE_STATE,
     SET_LOBBY_CHAT_RECIPIENT,
-    SET_PRIVATE_MESSAGE_RECIPIENT
+    SET_PRIVATE_MESSAGE_RECIPIENT,
+    SET_REPLY_MESSAGE
 } from './actionTypes';
 import { ChatTabs } from './constants';
+import { IMessage } from './types';
 
 /**
  * Adds a chat message to the collection of messages.
@@ -123,17 +125,20 @@ export function closeChat() {
  *
  * @param {string} message - The chat message to send out.
  * @param {boolean} ignorePrivacy - True if the privacy notification should be ignored.
+ * @param {string} replyToId - The ID of the message being replied to.
  * @returns {{
  *     type: SEND_MESSAGE,
  *     ignorePrivacy: boolean,
- *     message: string
+ *     message: string,
+ *     replyToId?: string
  * }}
  */
-export function sendMessage(message: string, ignorePrivacy = false) {
+export function sendMessage(message: string, ignorePrivacy = false, replyToId?: string) {
     return {
         type: SEND_MESSAGE,
         ignorePrivacy,
-        message
+        message,
+        replyToId
     };
 }
 
@@ -355,5 +360,21 @@ export function handleLobbyChatInitialized(participantId: string) {
 
         // notify other moderators.
         return conference?.sendLobbyMessage(payload);
+    };
+}
+
+/**
+ * Sets the message being replied to.
+ *
+ * @param {IMessage} replyMessage - The message to reply to, or undefined to clear.
+ * @returns {{
+ *     type: SET_REPLY_MESSAGE,
+ *     replyMessage: IMessage | undefined
+ * }}
+ */
+export function setReplyMessage(replyMessage?: IMessage) {
+    return {
+        type: SET_REPLY_MESSAGE,
+        replyMessage
     };
 }

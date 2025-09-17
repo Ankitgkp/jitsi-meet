@@ -20,6 +20,7 @@ import {
     setFocusedTab,
     setPrivateMessageRecipient,
     setPrivateMessageRecipientById,
+    setReplyMessage,
     setUserChatWidth,
     toggleChat
 } from '../../actions.web';
@@ -342,6 +343,8 @@ const Chat = ({
         };
     }, [ onDragMouseUp, onChatResize ]);
 
+    const replyMessage = useSelector((state: IReduxState) => state['features/chat'].replyMessage);
+
     /**
     * Sends a text message.
     *
@@ -351,8 +354,13 @@ const Chat = ({
     * @type {Function}
     */
     const onSendMessage = useCallback((text: string) => {
-        dispatch(sendMessage(text));
-    }, []);
+        dispatch(sendMessage(text, false, replyMessage?.messageId));
+
+        // Clear the reply message after sending
+        if (replyMessage) {
+            dispatch(setReplyMessage());
+        }
+    }, [replyMessage]);
 
     /**
     * Toggles the chat window.

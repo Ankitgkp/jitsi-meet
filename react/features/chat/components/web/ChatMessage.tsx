@@ -14,6 +14,7 @@ import { IChatMessageProps } from '../../types';
 
 import MessageMenu from './MessageMenu';
 import ReactButton from './ReactButton';
+import ReplyButton from './ReplyButton';
 
 interface IProps extends IChatMessageProps {
     className?: string;
@@ -186,6 +187,26 @@ const useStyles = makeStyles()((theme: Theme) => {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap'
+        },
+        replyIndicator: {
+            borderLeft: `3px solid ${theme.palette.action.active}`,
+            paddingLeft: theme.spacing(2),
+            marginLeft: theme.spacing(1),
+            marginBottom: theme.spacing(1)
+        },
+        replyContent: {
+            ...theme.typography.bodyShortRegular,
+            color: theme.palette.text02,
+            fontSize: '0.875rem',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            marginBottom: theme.spacing(0.5)
+        },
+        replyAuthor: {
+            ...theme.typography.labelBold,
+            color: theme.palette.text02,
+            fontSize: '0.75rem'
         }
     };
 });
@@ -204,6 +225,16 @@ const ChatMessage = ({
     const [ isHovered, setIsHovered ] = useState(false);
     const [ isReactionsOpen, setIsReactionsOpen ] = useState(false);
 
+    // Find the message being replied to
+    const replyToMessage = useMemo(() => {
+        if (!message.replyToId || !state) {
+            return null;
+        }
+
+        const messages = state['features/chat'].messages;
+        return messages.find((msg: any) => msg.messageId === message.replyToId) || null;
+    }, [message.replyToId, state]);
+
     const handleMouseEnter = useCallback(() => {
         setIsHovered(true);
     }, []);
@@ -219,6 +250,32 @@ const ChatMessage = ({
     const handleReactionsClose = useCallback(() => {
         setIsReactionsOpen(false);
     }, []);
+
+    /**
+     * Renders the reply indicator showing the original message being replied to.
+     *
+     * @returns {React$Element<*> | null}
+     */
+    function _renderReplyIndicator() {
+        if (!replyToMessage) {
+            return null;
+        }
+
+        const truncatedMessage = replyToMessage.message.length > 50
+            ? `${replyToMessage.message.substring(0, 50)}...`
+            : replyToMessage.message;
+
+        return (
+            <div className = { classes.replyIndicator }>
+                <div className = { classes.replyAuthor }>
+                    {replyToMessage.displayName}
+                </div>
+                <div className = { classes.replyContent }>
+                    {truncatedMessage}
+                </div>
+            </div>
+        );
+    }
 
     /**
      * Renders the display name of the sender.
@@ -341,13 +398,18 @@ const ChatMessage = ({
             <div className = { classes.sideBySideContainer }>
                 {!shouldDisplayMenuOnRight && (
                     <div className = { classes.optionsButtonContainer }>
-                        {isHovered && <MessageMenu
-                            displayName = { message.displayName }
-                            enablePrivateChat = { Boolean(enablePrivateChat) }
-                            isFromVisitor = { message.isFromVisitor }
-                            isLobbyMessage = { message.lobbyChat }
-                            message = { message.message }
-                            participantId = { message.participantId } />}
+                        {isHovered && (
+                            <>
+                                <ReplyButton message = { message } />
+                                <MessageMenu
+                                    displayName = { message.displayName }
+                                    enablePrivateChat = { Boolean(enablePrivateChat) }
+                                    isFromVisitor = { message.isFromVisitor }
+                                    isLobbyMessage = { message.lobbyChat }
+                                    message = { message.message }
+                                    participantId = { message.participantId } />
+                            </>
+                        )}
                     </div>
                 )}
                 <div
@@ -361,6 +423,7 @@ const ChatMessage = ({
                     <div className = { classes.replyWrapper }>
                         <div className = { cx('messagecontent', classes.messageContent) }>
                             {showDisplayName && _renderDisplayName()}
+                            {_renderReplyIndicator()}
                             <div className = { cx('usermessage', classes.userMessage) }>
                                 <Message
                                     screenReaderHelpText = { message.displayName === message.recipient
@@ -397,13 +460,18 @@ const ChatMessage = ({
                         </div>}
                         <div>
                             <div className = { classes.optionsButtonContainer }>
-                                {isHovered && <MessageMenu
-                                    displayName = { message.displayName }
-                                    enablePrivateChat = { Boolean(enablePrivateChat) }
-                                    isFromVisitor = { message.isFromVisitor }
-                                    isLobbyMessage = { message.lobbyChat }
-                                    message = { message.message }
-                                    participantId = { message.participantId } />}
+                                {isHovered && (
+                                    <>
+                                        <ReplyButton message = { message } />
+                                        <MessageMenu
+                                            displayName = { message.displayName }
+                                            enablePrivateChat = { Boolean(enablePrivateChat) }
+                                            isFromVisitor = { message.isFromVisitor }
+                                            isLobbyMessage = { message.lobbyChat }
+                                            message = { message.message }
+                                            participantId = { message.participantId } />
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

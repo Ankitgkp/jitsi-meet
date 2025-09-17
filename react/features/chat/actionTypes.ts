@@ -69,7 +69,8 @@ export const OPEN_CHAT = 'OPEN_CHAT';
  * {
  *     type: SEND_MESSAGE,
  *     ignorePrivacy: boolean,
- *     message: string
+ *     message: string,
+ *     replyToId?: string
  * }
  */
 export const SEND_MESSAGE = 'SEND_MESSAGE';
@@ -172,3 +173,13 @@ export const SET_CHAT_IS_RESIZING = 'SET_CHAT_IS_RESIZING';
   * }
   */
  export const NOTIFY_PRIVATE_RECIPIENTS_CHANGED = 'NOTIFY_PRIVATE_RECIPIENTS_CHANGED';
+
+/**
+ * The type of action which sets the message being replied to.
+ *
+ * {
+ *     type: SET_REPLY_MESSAGE,
+ *     replyMessage: IMessage | undefined
+ * }
+ */
+export const SET_REPLY_MESSAGE = 'SET_REPLY_MESSAGE';
